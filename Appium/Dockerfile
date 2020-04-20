@@ -1,6 +1,4 @@
-ARG BASE_IMAGE=ubuntu:bionic-20200311
-FROM $BASE_IMAGE
-ENV BASE_IMAGE=$BASE_IMAGE
+FROM ubuntu:18.04
 
 LABEL maintainer "Srinivasan Sekar <srinivasan.sekar1990@gmail.com>"
 
@@ -113,6 +111,21 @@ ENV ATD_VERSION=$ATD_VERSION
 RUN wget -nv -O RemoteAppiumManager.jar "https://github.com/AppiumTestDistribution/ATD-Remote/releases/download/${ATD_VERSION}/RemoteAppiumManager-${ATD_VERSION}.jar"
 
 #==================================
+# Install opencv
+#==================================
+
+RUN apt-get -y install cmake && \
+    apt-get install -y git && \
+    apt-get install -y build-essential && \
+    apt-get install g++ && \
+    npm i -g opencv4nodejs --unsafe-perm=true --allow-root
+
+RUN apt-get -y install openssh-server && \ 
+	apt-get -y install sshpass    
+
+RUN useradd -p "$(openssl passwd -1 ubuntu)" -rm -d /home/ssh-user -g root ssh-user
+
+#==================================
 # Fix Issue with timezone mismatch
 #==================================
 ENV TZ="US/Pacific"
@@ -128,7 +141,7 @@ RUN echo "${TZ}" > /etc/timezone
 #===============
 EXPOSE 4723
 EXPOSE 4567
-
+EXPOSE 22
 #====================================================
 # Scripts to run appium and connect to Selenium Grid
 #====================================================
@@ -136,12 +149,13 @@ COPY entry_point.sh \
      generate_config.sh \
      wireless_connect.sh \
      wireless_autoconnect.sh \
+     defaultcapabilities.json \
      /root/
 
 RUN chmod +x /root/entry_point.sh && \
     chmod +x /root/generate_config.sh && \
     chmod +x /root/wireless_connect.sh && \
-    chmod +x /root/wireless_autoconnect.sh
+    chmod +x /root/wireless_autoconnect.sh 
 
 #========================================
 # Run xvfb and appium server
