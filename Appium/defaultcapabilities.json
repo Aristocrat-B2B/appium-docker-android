@@ -1,5 +1,12 @@
 {
-  "newCommandTimeout": 600,
   "adbExecTimeout": 300000,
-  "autoLaunch": false
+  "autoLaunch": false,
+  "newCommandTimeout": 600000,
+  "autoAcceptAlerts": true,
+  "setWebContentsDebuggingEnabled": true,
+  "autoGrantPermissions": true,
+  "noSign": true,
+  "androidInstallTimeout": 300000,
+  "uiautomator2ServerInstallTimeout": 100000
 }
+
